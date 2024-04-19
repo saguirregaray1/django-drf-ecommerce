@@ -49,6 +49,24 @@ class Product(models.Model):
         return self.name
 
 
+class Attribute(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField()
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class AttributeValue(models.Model):
+    attribute_value = models.CharField(max_length=100)
+    attribute = models.ForeignKey(
+        Attribute, on_delete=models.CASCADE, related_name="attribute_value"
+    )
+
+    def __str__(self) -> str:
+        return f"{self.attribute.name}_{self.attribute_value}"
+
+
 class ProductLine(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     sku = models.CharField(max_length=100, unique=True)
@@ -59,6 +77,12 @@ class ProductLine(models.Model):
     )
     order = OrderField(unique_for_field="product", blank=True)
     objects = ActiveQuerySet.as_manager()
+
+    attribute_value = models.ManyToManyField(
+        AttributeValue,
+        through="ProductLineAttributeValue",
+        related_name="product_line_attribute_value",
+    )
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -72,6 +96,22 @@ class ProductLine(models.Model):
 
     def __str__(self) -> str:
         return f"product_line_{self.sku}"
+
+
+class ProductLineAttributeValue(models.Model):
+    productline = models.ForeignKey(
+        ProductLine,
+        on_delete=models.CASCADE,
+        related_name="productline_attribute_value_pl",
+    )
+    attribute_value = models.ForeignKey(
+        AttributeValue,
+        on_delete=models.CASCADE,
+        related_name="productline_attribute_value_av",
+    )
+
+    class Meta:
+        unique_together = ("productline", "attribute_value")
 
 
 class ProductImage(models.Model):

@@ -4,7 +4,6 @@ from django.utils.safestring import mark_safe
 
 from .models import (
     Category,
-    Brand,
     Product,
     ProductImage,
     ProductLine,
@@ -63,7 +62,6 @@ class ProductAdmin(admin.ModelAdmin):
 admin.site.register(ProductLine, ProductLineAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Category)
-admin.site.register(Brand)
 admin.site.register(Attribute)
 admin.site.register(AttributeValue)
 admin.site.register(ProductType, ProductTypeAdmin)
